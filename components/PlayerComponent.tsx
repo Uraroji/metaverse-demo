@@ -11,7 +11,7 @@ CameraControls.install({ THREE: THREE })
 /**
  * Playerコンポーネントの引数の型
  */
-type PlayrProps = {
+type Props = {
     playerModel: VRM | undefined,                    // 操作するVRMモデル
     idolClip: THREE.AnimationClip | undefined,       // 何もしていない時のモーション
     walkClip: THREE.AnimationClip | undefined,       // 歩いているときのモーション
@@ -67,7 +67,7 @@ const getMoveDelta = (speed: number,
  * @param props 引数
  * @returns Three.jsのエレメント
  */
-export const PlayerComponent: React.FC<PlayrProps> = (props: PlayrProps) => {
+export const PlayerComponent: React.FC<Props> = (props: Props) => {
 
     // three.jsへのアクセス
     const {
@@ -106,18 +106,16 @@ export const PlayerComponent: React.FC<PlayrProps> = (props: PlayrProps) => {
 
     // モーションの更新
     useEffect(() => {
-        if (!props.idolClip || !props.walkClip) return
-        if (vrmRef.current) {
-            animationMixerRef.current = new THREE.AnimationMixer(vrmRef.current.scene)
-            actionsRef.current = {
-                idol: animationMixerRef.current.clipAction(props.idolClip),
-                walk: animationMixerRef.current.clipAction(props.walkClip)
-            }
-            actionsRef.current.idol.weight = 1
-            actionsRef.current.walk.weight = 0
-            actionsRef.current.idol.play()
-            actionsRef.current.walk.play()
+        if (!props.idolClip || !props.walkClip || !vrmRef.current) return
+        animationMixerRef.current = new THREE.AnimationMixer(vrmRef.current.scene)
+        actionsRef.current = {
+            idol: animationMixerRef.current.clipAction(props.idolClip),
+            walk: animationMixerRef.current.clipAction(props.walkClip)
         }
+        actionsRef.current.idol.weight = 1
+        actionsRef.current.walk.weight = 0
+        actionsRef.current.idol.play()
+        actionsRef.current.walk.play()
     }, [props.playerModel, props.idolClip, props.walkClip])
 
     const frameEvent = useCallback(() => {
@@ -237,10 +235,10 @@ export const PlayerComponent: React.FC<PlayrProps> = (props: PlayrProps) => {
         frameEvent()
 
         // 諸々のアップデート
-        TWEEN.update()
-        vrmRef.current?.update(delta)
-        animationMixerRef.current?.update(delta)
-        cameraControlsRef.current?.update(delta)
+        TWEEN.update() // TWEENの更新
+        vrmRef.current?.update(delta) // vrmモデルの更新
+        animationMixerRef.current?.update(delta) // アニメーションの更新
+        cameraControlsRef.current?.update(delta) // カメラコントロールの更新
     })
 
     // VRMの読み込みがなければ表示しない

@@ -1,12 +1,16 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import { VRM, VRMLoaderPlugin } from '@pixiv/three-vrm'
+import { VRM, VRMLoaderPlugin, VRMHumanBoneName } from '@pixiv/three-vrm'
+
+interface MixamoRig {
+  [name: string]: VRMHumanBoneName
+}
 
 /**
  * MIXAMOとVRMのRigの対応表
  */
-const mixamoVRMRigMap: any = {
+const mixamoVRMRigMap: MixamoRig = {
   mixamorigHips: 'hips',
   mixamorigSpine: 'spine',
   mixamorigSpine1: 'chest',
